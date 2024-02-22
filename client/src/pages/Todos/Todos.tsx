@@ -1,19 +1,16 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { ITodo, ITodoResponse } from "./TodosTypes";
+import { API_URL } from "../../utils/constants/constants";
 
 const Todos: React.FC = () => {
   const [todos, setTodos] = useState<ITodo[]>([]);
-  const [newTodoTitle, setNewTodoTitle] = useState<string>("");
-  const [newTodoDescription, setNewTodoDescription] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
 
   const fetchTodos = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get<ITodoResponse[]>(
-        "http://localhost:8080/api/todos"
-      );
+      const response = await axios.get<ITodoResponse[]>(API_URL);
 
       const data: ITodo[] = response.data.map((todo: ITodoResponse) => ({
         id: todo._id,
@@ -32,13 +29,10 @@ const Todos: React.FC = () => {
 
   const addTodo = async () => {
     try {
-      const response = await axios.post<ITodoResponse>(
-        "http://localhost:8080/api/todos",
-        {
-          title: newTodoTitle,
-          description: newTodoDescription,
-        }
-      );
+      const response = await axios.post<ITodoResponse>(API_URL, {
+        title: "Todo Title",
+        description: "Todo Description",
+      });
 
       const newTodo: ITodo = {
         id: response.data._id,
@@ -48,8 +42,6 @@ const Todos: React.FC = () => {
       };
 
       setTodos([...todos, newTodo]);
-      setNewTodoTitle("");
-      setNewTodoDescription("");
     } catch (error) {
       console.error("Error adding todo:", error);
     }
@@ -57,7 +49,7 @@ const Todos: React.FC = () => {
 
   const deleteTodo = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:8080/api/todos/${id}`);
+      await axios.delete(`${API_URL}/${id}`);
 
       console.log("Todo deleted successfully");
       setTodos((prevTodos) => prevTodos.filter((todo) => todo.id !== id));
@@ -72,21 +64,7 @@ const Todos: React.FC = () => {
 
   return (
     <div>
-      <div>
-        <input
-          type="text"
-          placeholder="Title"
-          value={newTodoTitle}
-          onChange={(e) => setNewTodoTitle(e.target.value)}
-        />
-        <input
-          type="text"
-          placeholder="Description"
-          value={newTodoDescription}
-          onChange={(e) => setNewTodoDescription(e.target.value)}
-        />
-        <button onClick={addTodo}>Add Todo</button>
-      </div>
+      <button onClick={addTodo}>Add Todo</button>
       {isLoading && <>LOADING.....</>}
       {todos.length === 0 && !isLoading && <>No todos sorry</>}
       {todos.map((todo) => {
