@@ -88,6 +88,7 @@ const Todos: React.FC = () => {
         <button onClick={addTodo}>Add Todo</button>
       </div>
       {isLoading && <>LOADING.....</>}
+      {todos.length === 0 && !isLoading && <>No todos sorry</>}
       {todos.map((todo) => {
         return (
           <div key={todo.id}>
